@@ -1,0 +1,4 @@
+name,email,password,department,college_name,regno,year,mobileNumber
+John Doe,john@sns.ac.in,StrongPass123!,CSE,SNS College,21001,II,9876543210
+Jane Smith,jane@sns.ac.in,SecurePass456!,ECE,SNS College,21002,I,9876543211
+Bob Williams,bob@sns.ac.in,MyPass789!,MECH,SNS College,21003,IV,9876543212
