@@ -148,7 +148,8 @@ export default function AdminLogin() {
             const data = await response.json();
 
             if (response.ok) {
-                toast.success(data.message);
+                toast.success("OTP sent successfully! Please check your email.");
+                setOtpSent(true);
                 // setIsForgotPassword(false);
                 // setIsResetPassword(true);
             } else {
@@ -174,7 +175,6 @@ export default function AdminLogin() {
             const data = await response.json();
 
             if (response.ok) {
-                toast.success(data.message);
                 setIsForgotPassword(false);
                 setIsResetPassword(true);
             } else {

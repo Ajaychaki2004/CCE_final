@@ -289,16 +289,29 @@ const ManageJobs = () => {
             )}
           </div>
         </section>
-        {itemsPerPage.length > 0 && (
           <div className="px-6">
-            <Pagination
-              currentPage={currentPage}
-              itemsPerPage={itemsPerPage}
-              totalItems={{ Jobs: jobs.length, Internships: internships.length, Exams: exams.length, Achievements: achievements.length, StudyMaterials: studyMaterials.length }[selectedCategory]}
-              onPageChange={setCurrentPage}
-            />
+          {selectedCategory &&
+            {
+              Jobs: jobs.length > itemsPerPage,
+              Internships: internships.length > itemsPerPage,
+              Exams: exams.length > itemsPerPage,
+              Achievements: achievements.length > itemsPerPage,
+              StudyMaterials: studyMaterials.length > itemsPerPage,
+            }[selectedCategory] && (
+              <Pagination
+                currentPage={currentPage}
+                itemsPerPage={itemsPerPage}
+                totalItems={{
+                  Jobs: jobs.length,
+                  Internships: internships.length,
+                  Exams: exams.length,
+                  Achievements: achievements.length,
+                  StudyMaterials: studyMaterials.length,
+                }[selectedCategory]}
+                onPageChange={setCurrentPage}
+              />
+            )}
           </div>
-        )}
       </div>
     </div>
   );

@@ -58,10 +58,18 @@ export default function InternshipDashboard() {
 
   useEffect(() => {
     const fetchPublishedInternships = async () => {
-      setIsLoading(true); // Set loading to true before fetching data
       try {
         setIsLoading(true);
-        const response = await axios.get("http://localhost:8000/api/published-internship/");
+        const token = Cookies.get("jwt");
+        const endpoint =
+          userRole === "admin"
+            ? "http://localhost:8000/api/manage-internships/"
+            : "http://localhost:8000/api/published-internship/";
+        const response = await axios.get(endpoint, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const internshipsWithType = response.data.internships.map((internship) => ({
           ...internship.internship_data,
           id: internship._id,
@@ -79,9 +87,11 @@ export default function InternshipDashboard() {
         setIsLoading(false);
       }
     };
-    fetchPublishedInternships();
-  }, [setIsLoading]);
 
+    if (userRole) {
+      fetchPublishedInternships();
+    }
+  }, [userRole, setIsLoading]);
   useEffect(() => {
     if (internships.length > 0) {
       applyFilters();

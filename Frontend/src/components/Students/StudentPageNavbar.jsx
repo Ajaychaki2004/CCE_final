@@ -95,7 +95,7 @@ export default function StudentPageNavbar({ currentPage, transparent, tag }) {
       dropdownId: "support",
       subItems: [
         { label: "Contact Us", href: "/contact" },
-        { label: "Inbox", href: "/student/mail" },
+        //{ label: "Inbox", href: "/student/mail" },
       ],
     },
   ]

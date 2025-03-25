@@ -63,7 +63,6 @@ const ContactForm = () => {
       toast.success(response.data.message || "Message sent successfully!");
 
       setTimeout(() => {
-        navigate("/student/mail"); // Refresh page after success
       }, 1500); // Wait 1.5 seconds before refreshing
     } catch (error) {
       toast.error(error.response?.data.error || "Something went wrong!");
@@ -98,11 +97,11 @@ const ContactForm = () => {
           </p>
           <div className="mb-4">
             <p className="font-semibold">📧 Message Us</p>
-            <p className="text-gray-600">support@gmail.com</p>
+            <p className="text-gray-600">head.cce@snsgroups.com</p>
           </div>
           <div>
             <p className="font-semibold">📞 Call Us</p>
-            <p className="text-gray-600">+91 9384785767</p>
+            <p className="text-gray-600">+91 99463 02567</p>
           </div>
         </div>
 

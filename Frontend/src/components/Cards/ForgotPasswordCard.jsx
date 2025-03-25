@@ -73,7 +73,7 @@ export default function ForgotPasswordCard({
     try {
       if (otpSent) {
         await onVerifyOTP(e);
-        toast.success("OTP verified successfully!");
+        // toast.success("OTP verified successfully!");
       } else {
         const response = await onSubmit(e);
 
@@ -97,7 +97,6 @@ export default function ForgotPasswordCard({
       setLoading(false);
     }
   };
-
 
   const handleResendOTP = async (e) => {
     setLoading(true);

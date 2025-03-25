@@ -46,14 +46,20 @@ export default function ExamDashboard() {
     }
   }, []);
 
-  // Fetch published exams
   useEffect(() => {
     const fetchPublishedExams = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get(
-          "http://localhost:8000/api/published-exams/"
-        );
+        const token = Cookies.get("jwt");
+        const endpoint =
+          userRole === "admin"
+            ? "http://localhost:8000/api/manage-exams/"
+            : "http://localhost:8000/api/published-exams/";
+        const response = await axios.get(endpoint, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const examsWithType = response.data.exams
           .filter(
             (exam, index, self) =>
@@ -77,11 +83,16 @@ export default function ExamDashboard() {
       } catch (err) {
         console.error("Error fetching published exams:", err);
         setError("Failed to load exams.");
+        setIsLoading(false);
       }
     };
-    fetchPublishedExams();
-  }, []);
 
+    if (userRole) {
+      fetchPublishedExams();
+    }
+  }, [userRole, setIsLoading]);
+
+  
   // Set user role
   useEffect(() => {
     const token = Cookies.get("jwt");

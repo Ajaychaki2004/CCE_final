@@ -137,9 +137,16 @@ export default function JobDashboard() {
     const fetchPublishedJobs = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get(
-          "http://localhost:8000/api/published-jobs/"
-        );
+        const token = Cookies.get("jwt");
+        const endpoint =
+          userRole === "admin"
+            ? "http://localhost:8000/api/manage-jobs/"
+            : "http://localhost:8000/api/published-jobs/";
+            const response = await axios.get(endpoint, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
         const jobsWithType = response.data.jobs.map((job) => ({
           ...job,
           type: "job",
@@ -150,12 +157,13 @@ export default function JobDashboard() {
         setFilteredJobs(jobsWithType);
         setIsLoading(false);
       } catch (err) {
-        console.error("Error fetching published jobs:", err);
+        console.error("Error fetching jobs:", err);
         setError("Failed to load jobs.");
       }
     };
+  
     fetchPublishedJobs();
-  }, []);
+  }, [userRole]);
 
   const fetchSavedJobs = async () => {
     try {
