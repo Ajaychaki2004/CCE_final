@@ -37,6 +37,12 @@ export default function StudentPageNavbar({ currentPage, transparent, tag }) {
     }
   }, [transparent])
 
+  useEffect(() => {
+    const user = localStorage.getItem("username"); // Retrieve username from local storage
+    if (user) {
+      setUsername(user);
+    }
+  }, []);
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -189,7 +195,7 @@ export default function StudentPageNavbar({ currentPage, transparent, tag }) {
                 setMobileMenuOpen(false)
               }}
             >
-              <span className="text-lg text-black mr-2 hidden md:block">My Profile</span>
+              <span className="text-lg text-black mr-2 hidden md:block">{username || "My Profile"}</span>
               <img
                 src={ProfileStudent || "/placeholder.svg"}
                 alt="Profile"

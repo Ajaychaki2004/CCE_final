@@ -39,6 +39,13 @@ function formatViewCount(count) {
   return count.toString();
 }
 
+function truncateString(str, num) {
+  if (str.length <= num) {
+    return str;
+  }
+  return str.slice(0, num) + "...";
+}
+
 export default function HomeCard({
   application,
   handleCardClick,
@@ -53,6 +60,7 @@ export default function HomeCard({
   const [userId, setUserId] = useState(null);
   const [isSaved, setIsSaved] = useState(initialIsSaved);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
   const [viewCount, setViewCount] = useState(formatViewCount(application.views ? application.views : 0)); 
 
   useEffect(() => {
@@ -82,7 +90,8 @@ export default function HomeCard({
 
     try {
       const jobId = application._id || application.id;
-      await axios.post(`http://localhost:8000/api/increment-view-count/${jobId}/`, {
+      console.log("Job ID:", application._id);
+      await axios.post(`${API_BASE_URL}/api/increment-view-count/${jobId}/`, {
         student_id: userId, // Include the student's ObjectId in the request payload
       });
 
@@ -112,16 +121,16 @@ export default function HomeCard({
 
       if (application.type === "exam") {
         endpoint = isSaved
-          ? `http://localhost:8000/api/unsave-exam/${jobId}/`
-          : `http://localhost:8000/api/save-exam/${jobId}/`;
+          ? `${API_BASE_URL}/api/unsave-exam/${jobId}/`
+          : `${API_BASE_URL}/api/save-exam/${jobId}/`;
       } else if (application.type === "internship") {
         endpoint = isSaved
-          ? `http://localhost:8000/api/unsave-internship/${jobId}/`
-          : `http://localhost:8000/api/save-internship/${jobId}/`;
+          ? `${API_BASE_URL}/api/unsave-internship/${jobId}/`
+          : `${API_BASE_URL}/api/save-internship/${jobId}/`;
       } else {
         endpoint = isSaved
-          ? `http://localhost:8000/api/unsave-job/${jobId}/`
-          : `http://localhost:8000/api/save-job/${jobId}/`;
+          ? `${API_BASE_URL}/api/unsave-job/${jobId}/`
+          : `${API_BASE_URL}/api/save-job/${jobId}/`;
       }
 
       const response = await axios.post(endpoint, {
@@ -176,11 +185,11 @@ return (
                         >
                             <span className="flex items-center">
                                 <i className="bi bi-building mr-1 opacity-75 text-[12px] sm:text-[14px]"></i>
-                                {application.company_name}
+                                {truncateString(application.company_name, 10)}
                             </span>
                             <span className="flex items-center">
                                 <FiMapPin className="mr-1 opacity-75 text-[12px] sm:text-[14px]" />
-                                {application.location}
+                                {truncateString(application.location, 10)}
                             </span>
                         </div>
                     ) : null}
@@ -212,7 +221,7 @@ return (
                 </div>
                 <div className="flex items-center">
                     <FiEye className="mr-1 opacity-75 text-[12px] sm:text-[15px]" />
-                    {viewCount} views
+                    {viewCount} viewed
                 </div>
             </div>
         </div>

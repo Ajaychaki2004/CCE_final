@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
@@ -10,7 +9,6 @@ import Footer from "../../components/Common/Footer";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 import { RiEdit2Fill } from "react-icons/ri";
-
 
 import {
   FaBook,
@@ -50,6 +48,7 @@ const ExamPreview = () => {
   const { id } = useParams();
   const [exam, setExam] = useState(null);
   const [userId, setUserId] = useState(null);
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState(null);
   const [showApplySuccess, setShowApplySuccess] = useState(false);
@@ -78,7 +77,7 @@ const ExamPreview = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`http://127.0.0.1:8000/api/exam/${id}/`)
+    fetch(`${API_BASE_URL}/api/exam/${id}/`)
       .then((response) => response.json())
       .then((data) => {
         setExam(data.exam);
@@ -95,7 +94,7 @@ const ExamPreview = () => {
       setLoadingExams(true);
       try {
         const response = await axios.get(
-          "http://localhost:8000/api/published-exams/" // Adjust endpoint as needed
+          `${API_BASE_URL}/api/published-exams/` // Adjust endpoint as needed
         );
 
         const examsData = Array.isArray(response.data)
@@ -135,7 +134,7 @@ const ExamPreview = () => {
           return;
         }
         const response = await axios.delete(
-          `http://localhost:8000/api/exam-delete/${id}/`,
+          `${API_BASE_URL}/api/exam-delete/${id}/`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -158,7 +157,7 @@ const ExamPreview = () => {
     try {
       const token = Cookies.get("jwt");
       const userId = JSON.parse(atob(token.split(".")[1])).student_user;
-      await axios.post("http://localhost:8000/api/apply-exam/", {
+      await axios.post(`${API_BASE_URL}/api/apply-exam/`, {
         studentId: userId,
         examId: id,
       });
@@ -172,8 +171,8 @@ const ExamPreview = () => {
         // Check if there's a valid exam link
         if (examLink && examLink.trim() !== '') {
           // If the link doesn't start with http:// or https://, add https://
-          const formattedLink = examLink.match(/^https?:\/\//) ? 
-            examLink : 
+          const formattedLink = examLink.match(/^https?:\/\//) ?
+            examLink :
             `https://${examLink}`;
           window.open(formattedLink, "_blank", "noopener noreferrer");
         } else {
@@ -192,26 +191,22 @@ const ExamPreview = () => {
         console.error("User ID is not available");
         return;
       }
-  
-      // Check if the exam is already saved
-      const isExamSaved = savedExams.includes(id);
-  
-      const endpoint = isExamSaved
-        ? `http://localhost:8000/api/unsave-exam/${id}/`
-        : `http://localhost:8000/api/save-exam/${id}/`;
-  
+
+      const endpoint = saved
+        ? `${API_BASE_URL}/api/unsave-exam/${id}/`
+        : `${API_BASE_URL}/api/save-exam/${id}/`;
+
       const response = await axios.post(endpoint, { userId });
-  
+
       if (response.status === 200) {
-        // Update savedExams array in state
-        const updatedExams = isExamSaved
-          ? savedExams.filter((examId) => examId !== id) // Remove if unsaved
-          : [...savedExams, id]; // Add if saved
-  
-        setSavedExams(updatedExams); // Update state
-        setSaved(!isExamSaved); // Toggle saved state
-        setShowSaveSuccess(true); // Show success message
-  
+        const updatedExams = saved
+          ? savedExams.filter((examId) => examId !== id)
+          : [...savedExams, id];
+
+        setSavedExams(updatedExams);
+        setSaved(!saved);
+        setShowSaveSuccess(true);
+
         setTimeout(() => {
           setShowSaveSuccess(false);
         }, 2000);
@@ -221,9 +216,16 @@ const ExamPreview = () => {
       if (error.response) {
         console.error("Server response:", error.response.data);
       }
+      toast.error("Error saving exam. Please try again.");
     }
   };
-  
+
+  const truncateString = (str, num) => {
+    if (str.length <= num) {
+      return str;
+    }
+    return str.slice(0, num) + '...';
+  };
   const handleCardClick = (examId) => {
     window.location.href = `/exam-preview/${examId}`;
   };
@@ -278,7 +280,7 @@ const ExamPreview = () => {
       link.click();
       document.body.removeChild(link);
     };
-  
+
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
         <div className="relative w-3/4 h-3/4 max-w-4xl max-h-4xl">
@@ -314,9 +316,9 @@ const ExamPreview = () => {
       )}
 
       {showSaveSuccess && (
-        <div className="fixed top-20 left-8/9 transform -translate-x-1/2 z-50 bg-yellow-200 border border-yellow-200 text-yellow-800 px-6 py-3 rounded-lg shadow-lg flex items-center">
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 bg-green-100 border border-green-200 text-green-800 px-6 py-3 rounded-lg shadow-lg flex items-center">
           <FaCheck className="mr-2" />
-          Exam saved successfully!
+          {saved ? "Exam saved successfully!" : "Exam unsaved !"}
         </div>
       )}
 
@@ -334,30 +336,34 @@ const ExamPreview = () => {
               userRole === "student" ? "lg:w-[70%]" : "lg:w-full"
             }`}
           >
-            <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-6 border border-gray-100 ">
-              <div className="flex flex-col  ">
-                {/* Left Column - Exam Image */}
+            <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-6 border border-gray-100">
+              <div className="flex flex-col">
+                {/* Left Column - Company Image */}
                 <div
                   style={{
                     background:
                       "linear-gradient(to bottom, rgba(255, 230, 141, 0.28), rgba(255, 204, 0, 0.25))",
                   }}
-                  className="md: p-6 border-b md:border-b-0 md:border-r border-gray-200 bg-gray-50 flex items-center justify-center"
+                  className="p-6 border-b md:border-b-0 md:border-r border-gray-200 bg-gray-50 flex items-center justify-center"
                 >
-                  <img
-                    src={
-                      exam.exam_data.image
-                        ? `data:image/jpeg;base64,${exam.exam_data.image}`
-                        : placeholderImage
-                    }
-                    alt={`${exam.exam_data.exam_title} image`}
-                    className="max-w-full max-h-80 object-contain rounded-lg"
-                    onClick={() => setIsModalOpen(true)}
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = placeholderImage;
-                    }}
-                  />
+                  <div className="w-120 h-80 flex items-center justify-center">
+                  {exam.exam_data.image ? (
+                    <img
+                      src={`data:image/jpeg;base64,${exam.exam_data.image}`}
+                      alt={`${exam.exam_data.exam_title} image`}
+                      className="max-w-full max-h-80 object-contain rounded-lg"
+                      onClick={() => setIsModalOpen(true)}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = placeholderImage;
+                      }}
+                    />
+                  ) : (
+                    <h6 className="max-w-full font-bold text-5xl object-contain">
+                      {exam.exam_data.organization}
+                    </h6>
+                  )}
+                </div>
                 </div>
 
                 {/* Right Column - Exam Summary */}
@@ -371,7 +377,7 @@ const ExamPreview = () => {
 
                   <div className="relative z-10 flex justify-between items-start">
                     <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
-                      {exam.exam_data.exam_title}
+                      {truncateString(exam.exam_data.exam_title, 25)}
                     </h1>
                   </div>
 
@@ -424,49 +430,8 @@ const ExamPreview = () => {
                             userRole === "student"
                               ? "hover:bg-yellow-600"
                               : "opacity-60 cursor-not-allowed"
-                          } 
-                                    text-white font-semibold py-3 px-8 rounded-lg transition duration-300 ease-in-out 
-                                    flex items-center shadow-md ${
-                                      userRole === "student" && "hover:shadow-lg"
-                                    }`}
-                        >
-                          Apply Now <FaExternalLinkAlt className="ml-2 text-sm" />
-                        </button>
-                        <button
-                            onClick={userRole === "student" ? handleSaveExam : undefined}
-                            className={`${
-                                saved
-                                    ? "bg-gray-100 text-gray-800"
-                                    : "border-2 border-gray-300 text-gray-700"
-                            } 
-                            font-semibold py-3 px-8 rounded-lg 
-                            ${userRole === "student" ? "hover:bg-gray-100" : "opacity-60 cursor-not-allowed"}
-                            transition duration-300 ease-in-out flex items-center justify-center`}
-                            title={userRole !== "student" ? "Only students can save jobs" : ""}
-                        >
-                            {saved ? (
-                                <>
-                                    Saved <FaBookmark className="ml-2 text-yellow-500" />
-                                </>
-                            ) : (
-                                <>
-                                    Save Job <FaBookmark className="ml-2" />
-                                </>
-                            )}
-                        </button>
-                        <button
-                          onClick={handleApplyClick}
-                          title={
-                            userRole !== "student"
-                              ? "Only students can apply for jobs"
-                              : ""
                           }
-                          className={`bg-yellow-500 ${
-                            userRole === "student"
-                              ? "hover:bg-yellow-600"
-                              : "opacity-60 cursor-not-allowed"
-                          } 
-                                    text-white font-semibold py-3 px-8 rounded-lg transition duration-300 ease-in-out 
+                                    text-white font-semibold py-3 px-8 rounded-lg transition duration-300 ease-in-out
                                     flex items-center shadow-md ${
                                       userRole === "student" && "hover:shadow-lg"
                                     }`}
@@ -479,11 +444,11 @@ const ExamPreview = () => {
                                 saved
                                     ? "bg-gray-100 text-gray-800"
                                     : "border-2 border-gray-300 text-gray-700"
-                            } 
-                            font-semibold py-3 px-8 rounded-lg 
+                            }
+                            font-semibold py-3 px-8 rounded-lg
                             ${userRole === "student" ? "hover:bg-gray-100" : "opacity-60 cursor-not-allowed"}
                             transition duration-300 ease-in-out flex items-center justify-center`}
-                            title={userRole !== "student" ? "Only students can save jobs" : ""}
+                            title={userRole !== "student" ? "Only students can save exams" : ""}
                         >
                             {saved ? (
                                 <>
@@ -495,7 +460,6 @@ const ExamPreview = () => {
                                 </>
                             )}
                         </button>
-                        
                       </>
                     ) : null}
                   </div>
@@ -513,7 +477,7 @@ const ExamPreview = () => {
                           onClick={handleDeleteClick}
                           className="bg-gray-100 hover:bg-gray-300 text-black font-semibold py-3 px-8 rounded-lg transition duration-300 ease-in-out flex items-center shadow-md hover:shadow-lg"
                         >
-                          Delete 
+                          Delete
                           <FaTrash className="ml-2" />
                         </button>
                       </>
@@ -705,25 +669,49 @@ const ExamPreview = () => {
                 <p className="text-gray-600 mb-4">
                   Don’t miss this opportunity! Apply before the deadline.
                 </p>
-                <div className="relative group">
+                <div className="flex gap-4">
+                  <div className="relative group">
+                    <button
+                      onClick={
+                        userRole === "student" ? handleApplyClick : undefined
+                      }
+                      className={`w-auto bg-yellow-500 ${
+                        userRole === "student"
+                          ? "hover:bg-yellow-600"
+                          : "opacity-60 cursor-not-allowed"
+                      } text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out flex items-center justify-center shadow-md ${
+                        userRole === "student" && "hover:shadow-lg"
+                      }`}
+                      title={
+                        userRole !== "student"
+                          ? "Only students can apply for Exam"
+                          : ""
+                      }
+                    >
+                      Apply Now <FaExternalLinkAlt className="ml-2 text-sm" />
+                    </button>
+                  </div>
                   <button
-                    onClick={
-                      userRole === "student" ? handleApplyClick : undefined
+                    onClick={userRole === "student" ? handleSaveExam : undefined}
+                    className={`${
+                      saved
+                        ? "bg-gray-100 text-gray-800"
+                        : "border-2 border-gray-300 text-gray-700"
                     }
-                    className={`w-auto bg-yellow-500 ${
-                      userRole === "student"
-                        ? "hover:bg-yellow-600"
-                        : "opacity-60 cursor-not-allowed"
-                    } text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out flex items-center justify-center shadow-md ${
-                      userRole === "student" && "hover:shadow-lg"
-                    }`}
-                    title={
-                      userRole !== "student"
-                        ? "Only students can apply for Exam"
-                        : ""
-                    }
+                    font-semibold py-3 px-6 rounded-lg
+                    ${userRole === "student" ? "hover:bg-gray-100" : "opacity-60 cursor-not-allowed"}
+                    transition duration-300 ease-in-out flex items-center justify-center`}
+                    title={userRole !== "student" ? "Only students can save exams" : ""}
                   >
-                    Apply Now <FaExternalLinkAlt className="ml-2 text-sm" />
+                    {saved ? (
+                      <>
+                        Saved <FaBookmark className="ml-2 text-yellow-500" />
+                      </>
+                    ) : (
+                      <>
+                        Save Exam <FaBookmark className="ml-2" />
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
