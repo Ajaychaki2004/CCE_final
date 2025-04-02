@@ -15,12 +15,12 @@ import { FiBookmark, FiMapPin, FiEye, FiClock } from "react-icons/fi";
 
 
 // icon imports
-import codeSandBoxIcon from "../../assets/icons/codesandbox.png";
-import pullIcon from "../../assets/icons/git-pull-request.png";
-import gridIcon from "../../assets/icons/grid-icon.png";
-import mailIcon from "../../assets/icons/mail.png";
-import sendIcon from "../../assets/icons/send.png";
-import fileIcon from "../../assets/icons/file.png";
+import first from "../../assets/gifs/Info-1.gif";
+import second from "../../assets/gifs/info-2.gif";
+import third from "../../assets/gifs/info-3.gif";
+import four from "../../assets/gifs/Info-4.gif";
+import five from "../../assets/gifs/Info-5.gif";
+import six from "../../assets/gifs/Info-6.gif";
 
 import { toast, ToastContainer } from "react-toastify";
 
@@ -518,130 +518,46 @@ function formatViewCount(count) {
 
 const Insights = () => {
   return (
-    <section className="w-[90%] md:w-[85%] self-center flex flex-col items-center space-y-10 md:space-y-20 px-4 md:px-0 ]">
+    <section className="w-[90%] md:w-[85%] self-center flex flex-col items-center space-y-10 md:space-y-20 px-4 md:px-0">
       <div className="relative w-full h-full shadow-2xl rounded-lg shadow-white">
-        <video
-          src="/video.MOV"
-          autoPlay
-          loop
-          muted
-          className="w-full h-full object-cover rounded-lg"
-        />
+        <video src="/video.MOV" autoPlay loop muted className="w-full h-full object-cover rounded-lg" />
         <div className="absolute bottom-0 left-0 w-full h-1/4 bg-gradient-to-t from-white to-transparent rounded-b-lg"></div>
       </div>
-      <div className="bg-[#070E20] w-screen min-h-screen px-4 py-8 md:px-20">
-        <div className="flex flex-col items-center space-y-2 text-center md:mt-10 ">
-          <p className="text-2xl md:text-4xl font-semibold text-white">
-            {" "}
-            Your Ultimate Career Toolkit{" "}
-          </p>
-          <p className="text-gray-500 text-sm md:text-base text-gray-400 mb-5">
-            {" "}
-            Essential Tools to Elevate Your Job Search & Career Growth.{" "}
+      <div className="bg-white w-screen  px-4 py-8 md:px-20">
+        <div className="flex flex-col items-center space-y-2 text-center md:mt-10 mb-12">
+          <h2 className="text-2xl md:text-4xl font-semibold text-black">What We Offer</h2>
+          <p className="text-gray-500 text-sm md:text-base max-w-2xl">
+            Explore top features crafted to boost your career journey both faster and smarter
           </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 max-w-8xl mx-auto">
           {[
-            {
-              icon: fileIcon,
-              title: "Verified Study Materials",
-              content:
-                "Prepare for competitive exams and job applications with high-quality resources.",
-            },
-            {
-              icon: mailIcon,
-              title: "Job and Internship Listings",
-              content:
-                "Find categorized opportunities based on your skills, industry, and career goals.",
-            },
-            {
-              icon: pullIcon,
-              title: "Guidance and Student Support",
-              content:
-                "Get personalized advice, career mentorship, and assistance through our support team.",
-            },
-            {
-              icon: sendIcon,
-              title: "Achievements",
-              content:
-                "Highlight your career milestones, job placements, and exam successes to inspire others.",
-            },
-            {
-              icon: gridIcon,
-              title: "Job and Internship Alerts",
-              content:
-                " Get instant notifications for new job openings and internship opportunities.",
-            },
-            {
-              icon: codeSandBoxIcon,
-              title: "Seamless Application Process",
-              content:
-                "Apply to jobs effortlessly with a user-friendly and structured platform.",
-            },
+            { gif: first, title: "Verified Study Materials" },
+            { gif: second, title: "Job & Internship Listings" },
+            { gif: third, title: "Guidance and Student Support" },
+            { gif: four, title: "Achievements" },
           ].map((item, key) => {
-            const shuffleArray = (array) =>
-              array.sort(() => Math.random() - 0.5);
-
-            const baseColors = [
-              "#f8c974",
-              "#fcf5ec",
-              "#e09343",
-              "#9f501e",
-              "#f8c974",
-            ];
-
-            var shuffledArray = shuffleArray([...baseColors]);
-            shuffledArray = [...shuffledArray, shuffledArray[0]];
-
-            const randomizedGradient = `conic-gradient(${shuffledArray.join(
-              ", "
-            )})`;
-
             return (
               <div
                 key={key}
-                className="custom-border relative p-4 py-6 flex flex-col space-y-8 justify-between h-full text-white rounded-2xl"
-                style={{
-                  "--custom-gradient": randomizedGradient,
-                  background: "transparent",
-                  position: "relative",
-                  boxShadow: "0 0 0 2px rgba(248, 201, 116, 0.2)",
-                }}
+                className="flex flex-col items-center p-6 h-[200px] w-full border-2 border-[#999999]/50 rounded-lg hover:shadow-md transition-shadow"
               >
-                {/* Gradient border with glow effect */}
-                <div
-                  className="absolute inset-0 rounded-2xl -z-10"
-                  style={{
-                    background:
-                      "linear-gradient(to bottom right, #fcf5ec, #f8c974, #e09343)",
-                    padding: "1px",
-                    content: "''",
-                    filter: "blur(0.5px)",
-                    mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-                    maskComposite: "exclude",
-                    WebkitMask:
-                      "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-                    WebkitMaskComposite: "xor",
-                  }}
-                />
-
-                <div>
+                <div className="flex-1 flex items-center justify-center w-full">
                   <img
-                    src={item.icon || "/placeholder.svg"}
-                    className="w-6 mb-1"
-                    alt=""
+                    src={item.gif || "/placeholder.svg?height=120&width=120"}
+                    className="w-full h-full max-h-30 object-contain"
+                    alt={item.title}
                   />
-                  <p className="text-xl font-semibold"> {item.title} </p>
                 </div>
-                <p className="text-sm md:text-base"> {item.content} </p>
+                <p className="text-base font-medium text-center mt-4">{item.title}</p>
               </div>
-            );
+            )
           })}
         </div>
       </div>
     </section>
-  );
-};
+  )
+}
 
 
 

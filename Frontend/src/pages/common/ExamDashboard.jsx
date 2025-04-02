@@ -23,6 +23,7 @@ export default function ExamDashboard() {
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
+  const [isSavedExamOpen, setIsSavedExamOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("");
   const filters = ["Newest", "Oldest"];
 
@@ -287,6 +288,10 @@ export default function ExamDashboard() {
                         ? undefined
                         : savedExams.includes(exam._id)
                     }
+                    savedJobs={savedExams}
+                    isSavedJobsOpen={isSavedExamOpen}
+                    setSavedJobs={setSavedExams}
+                    setIsSavedJobsOpen={setIsSavedExamOpen}
                   />
                 ))
               )}
